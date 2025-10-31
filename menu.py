@@ -1,10 +1,18 @@
 """
 Модуль меню - пример нисходящего проектирования
+Итерация 3: Полная реализация функционала
 """
+
+# Глобальная переменная для хранения данных
+records = [
+    {"id": 1, "name": "Пример записи 1", "description": "Это первая тестовая запись"},
+    {"id": 2, "name": "Пример записи 2", "description": "Это вторая тестовая запись"}
+]
+
 
 def main():
     """Главная функция программы"""
-    print("Добро пожаловать в меню!")
+    print("Добро пожаловать в систему управления записями!")
 
     while True:
         show_main_menu()
@@ -14,21 +22,23 @@ def main():
             break
 
         process_choice(choice)
-        print("-" * 30)
+        input("\nНажмите Enter для продолжения...")
 
     print("До свидания!")
 
+
 def show_main_menu():
     """Показать главное меню"""
-    print("\n" + "="*20)
+    print("\n" + "=" * 20)
     print("=== ГЛАВНОЕ МЕНЮ ===")
-    print("="*20)
-    print("1. Показать все опции")
+    print("=" * 20)
+    print("1. Показать все записи")
     print("2. Добавить новую запись")
     print("3. Удалить запись")
-    print("4. Поиск")
+    print("4. Поиск записей")
     print("0. Выход")
-    print("-"*20)
+    print("-" * 20)
+
 
 def get_user_choice():
     """Получить выбор пользователя"""
@@ -39,15 +49,17 @@ def get_user_choice():
         else:
             print("Неверный выбор! Попробуйте снова.")
 
+
 def validate_choice(choice):
     """Проверить корректность выбора"""
     valid_choices = ["0", "1", "2", "3", "4"]
     return choice in valid_choices
 
+
 def process_choice(choice):
     """Обработать выбор пользователя"""
     if choice == "1":
-        show_all_options()
+        show_all_records()
     elif choice == "2":
         add_new_record()
     elif choice == "3":
@@ -55,78 +67,114 @@ def process_choice(choice):
     elif choice == "4":
         search_records()
 
-def show_all_options():
-    """Показать все опции"""
-    options = get_all_options()
-    display_options(options)
 
-def get_all_options():
-    """Получить все опции (заглушка)"""
-    return ["Опция 1", "Опция 2", "Опция 3"]
+def show_all_records():
+    """Показать все записи"""
+    if not records:
+        print("Нет доступных записей.")
+        return
 
-def display_options(options):
-    """Отобразить список опций"""
-    print("\n--- Доступные опции ---")
-    for i, option in enumerate(options, 1):
-        print(f"{i}. {option}")
+    print("\n--- Все записи ---")
+    for record in records:
+        print(f"ID: {record['id']}, Название: {record['name']}")
+        print(f"   Описание: {record['description']}")
+        print("-" * 30)
+
 
 def add_new_record():
     """Добавить новую запись"""
-    record_data = get_record_data_from_user()
-    success = save_record(record_data)
-    show_result(success, "запись успешно добавлена", "ошибка добавления")
+    print("\n--- Добавление новой записи ---")
 
-def get_record_data_from_user():
-    """Получить данные записи от пользователя"""
-    return "данные записи"
+    name = input("Введите название записи: ").strip()
+    if not name:
+        print("Название не может быть пустым!")
+        return
 
-def save_record(record_data):
-    """Сохранить запись (заглушка)"""
-    return True
+    description = input("Введите описание записи: ").strip()
+
+    new_record = {
+        "id": generate_new_id(),
+        "name": name,
+        "description": description
+    }
+
+    records.append(new_record)
+    print("✓ Запись успешно добавлена!")
+
+
+def generate_new_id():
+    """Сгенерировать новый ID для записи"""
+    if records:
+        return max(record["id"] for record in records) + 1
+    return 1
+
 
 def delete_record():
     """Удалить запись"""
-    record_id = get_record_id_from_user()
-    success = remove_record(record_id)
-    show_result(success, "запись успешно удалена", "ошибка удаления")
+    if not records:
+        print("Нет записей для удаления.")
+        return
 
-def get_record_id_from_user():
-    """Получить ID записи от пользователя (заглушка)"""
-    return "id записи"
+    print("\n--- Удаление записи ---")
+    show_all_records()
+
+    try:
+        record_id = int(input("Введите ID записи для удаления: "))
+    except ValueError:
+        print("Ошибка: ID должен быть числом!")
+        return
+
+    success = remove_record(record_id)
+    if success:
+        print("✓ Запись успешно удалена!")
+    else:
+        print("✗ Запись с таким ID не найдена")
+
 
 def remove_record(record_id):
-    """Удалить запись (заглушка)"""
-    return True
+    """Удалить запись по ID"""
+    global records
+    for i, record in enumerate(records):
+        if record["id"] == record_id:
+            del records[i]
+            return True
+    return False
+
 
 def search_records():
     """Поиск записей"""
-    search_query = get_search_query()
+    print("\n--- Поиск записей ---")
+
+    search_query = input("Введите поисковый запрос: ").strip().lower()
+    if not search_query:
+        print("Поисковый запрос не может быть пустым!")
+        return
+
     results = perform_search(search_query)
     display_search_results(results)
 
-def get_search_query():
-    """Получить поисковый запрос (заглушка)"""
-    return "поисковый запрос"
 
 def perform_search(query):
-    """Выполнить поиск (заглушка)"""
-    return ["результат 1", "результат 2"]
+    """Выполнить поиск по имени и описанию"""
+    results = []
+    for record in records:
+        if (query in record["name"].lower() or
+                query in record["description"].lower()):
+            results.append(record)
+    return results
+
 
 def display_search_results(results):
     """Показать результаты поиска"""
     if results:
-        print("\n--- Результаты поиска ---")
-        for result in results:
-            print(f"- {result}")
+        print(f"\n--- Найдено записей: {len(results)} ---")
+        for record in results:
+            print(f"ID: {record['id']}, Название: {record['name']}")
+            print(f"   Описание: {record['description']}")
+            print("-" * 30)
     else:
-        print("Ничего не найдено.")
+        print("Записи по вашему запросу не найдены.")
 
-def show_result(success, success_msg, error_msg):
-    """Показать результат операции"""
-    if success:
-        print(f"✓ {success_msg}")
-    else:
-        print(f"✗ {error_msg}")
 
 if __name__ == "__main__":
     main()
