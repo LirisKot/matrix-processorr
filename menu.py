@@ -1,12 +1,11 @@
 """
 Модуль меню - пример нисходящего проектирования
-Итерация 3: Полная реализация структуры, алгоритм - заглушка
+Итерация 4: Полная реализация с алгоритмом обработки матриц
 """
 
 # Глобальные переменные для хранения данных
 matrix = None
 result_matrix = None
-
 
 def main():
     """Главная функция программы"""
@@ -24,18 +23,16 @@ def main():
 
     print("До свидания!")
 
-
 def show_main_menu():
     """Показать главное меню"""
-    print("\n" + "=" * 40)
+    print("\n" + "="*40)
     print("=== СИСТЕМА ОБРАБОТКИ МАТРИЦ ===")
-    print("=" * 40)
+    print("="*40)
     print("1. Ввод исходных данных")
     print("2. Выполнение алгоритма")
     print("3. Вывод результата")
-    print("4. Завершение работы")
-    print("=" * 40)
-
+    print("0. Завершение работы")
+    print("="*40)
 
 def get_user_choice():
     """Получить выбор пользователя"""
@@ -46,12 +43,10 @@ def get_user_choice():
         else:
             print("Неверный выбор! Попробуйте снова.")
 
-
 def validate_choice(choice):
     """Проверить корректность выбора"""
-    valid_choices = ["0", "1", "2", "3", "4"]
+    valid_choices = ["0", "1", "2", "3"]
     return choice in valid_choices
-
 
 def process_choice(choice):
     """Обработать выбор пользователя"""
@@ -61,18 +56,17 @@ def process_choice(choice):
         execute_algorithm()
     elif choice == "3":
         output_result()
-    elif choice == "4":
+    elif choice == "0":
         print("Завершение работы...")
         exit()
-
 
 def input_data():
     """Ввод исходных данных"""
     global matrix, result_matrix
 
-    print("\n" + "=" * 30)
+    print("\n" + "="*30)
     print("=== ВВОД ИСХОДНЫХ ДАННЫХ ===")
-    print("=" * 30)
+    print("="*30)
     print("1. Ввод вручную")
     print("2. Случайная генерация")
     print("3. Назад")
@@ -94,7 +88,6 @@ def input_data():
     result_matrix = None
     print("✓ Данные успешно введены!")
 
-
 def manual_input():
     """Ручной ввод матрицы"""
     global matrix
@@ -109,11 +102,11 @@ def manual_input():
             return
 
         matrix = []
-        print(f"Введите матрицу {n}x{m} построчно:")
+        print(f"Введите матрицу {n}x{m} построчно (числа через пробел):")
 
         for i in range(n):
             while True:
-                row_input = input(f"Строка {i + 1}: ")
+                row_input = input(f"Строка {i+1}: ")
                 try:
                     row = list(map(int, row_input.split()))
                     if len(row) != m:
@@ -129,7 +122,6 @@ def manual_input():
 
     except ValueError:
         print("Ошибка ввода!")
-
 
 def random_generation():
     """Случайная генерация матрицы"""
@@ -158,28 +150,39 @@ def random_generation():
     except ValueError:
         print("Ошибка ввода!")
 
-
 def execute_algorithm():
-    """Выполнение алгоритма по заданию - ЗАГЛУШКА"""
+    """Выполнение алгоритма по заданию"""
     global matrix, result_matrix
 
     if matrix is None:
         print("Ошибка: сначала введите данные!")
         return
 
-    print("\n" + "=" * 30)
+    print("\n" + "="*30)
     print("=== ВЫПОЛНЕНИЕ АЛГОРИТМА ===")
-    print("=" * 30)
+    print("="*30)
 
-    # ЗАГЛУШКА - здесь должен быть реальный алгоритм
-    print("Алгоритм выполняется...")
+    print("Исходная матрица:")
+    print_matrix(matrix)
 
-    # Вместо реального алгоритма создаем заглушку
-    result_matrix = "результат выполнения алгоритма"
+    # РЕАЛИЗАЦИЯ АЛГОРИТМА
+    print("\nВыполнение алгоритма:")
+    print("1. Добавление среднеарифметического значения к каждой строке")
+    print("2. Сортировка строк по убыванию средних значений")
+
+    # Создаем копию матрицы с добавленными средними значениями
+    matrix_with_means = []
+    for row in matrix:
+        row_mean = sum(row) / len(row)
+        new_row = row + [row_mean]  # Добавляем среднее значение в конец строки
+        matrix_with_means.append(new_row)
+
+    # Сортируем строки по убыванию средних значений (последний элемент)
+    sorted_matrix = sorted(matrix_with_means, key=lambda x: x[-1], reverse=True)
+
+    result_matrix = sorted_matrix
 
     print("✓ Алгоритм выполнен успешно!")
-    print("(реализация алгоритма оставлена в виде заглушки)")
-
 
 def output_result():
     """Вывод результата"""
@@ -189,25 +192,35 @@ def output_result():
         print("Ошибка: сначала выполните алгоритм!")
         return
 
-    print("\n" + "=" * 30)
+    print("\n" + "="*30)
     print("=== ВЫВОД РЕЗУЛЬТАТА ===")
-    print("=" * 30)
+    print("="*30)
 
     print("Результат работы алгоритма:")
-    print(result_matrix)
-
-    print("\n(вывод реального результата оставлен в виде заглушки)")
-
+    print("Матрица с добавленными средними значениями, отсортированная по убыванию:")
+    print_matrix_with_means(result_matrix)
 
 def print_matrix(mat):
-    """Печать матрицы"""
+    """Печать обычной матрицы"""
     if mat is None:
         print("Матрица не определена")
         return
 
     for row in mat:
-        print(" ".join(f"{elem:4}" for elem in row))
+        print(" ".join(f"{elem:8}" for elem in row))
 
+def print_matrix_with_means(mat):
+    """Печать матрицы со средними значениями"""
+    if mat is None:
+        print("Матрица не определена")
+        return
+
+    for i, row in enumerate(mat):
+        # Выводим все элементы кроме последнего
+        elements = " ".join(f"{elem:8}" for elem in row[:-1])
+        # Последний элемент (среднее) выводим с округлением
+        mean_value = f"{row[-1]:8.2f}"
+        print(f"Строка {i+1}: {elements} | Среднее: {mean_value}")
 
 if __name__ == "__main__":
     main()
