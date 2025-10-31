@@ -1,18 +1,16 @@
 """
 Модуль меню - пример нисходящего проектирования
-Итерация 3: Полная реализация функционала
+Итерация 3: Полная реализация структуры, алгоритм - заглушка
 """
 
-# Глобальная переменная для хранения данных
-records = [
-    {"id": 1, "name": "Пример записи 1", "description": "Это первая тестовая запись"},
-    {"id": 2, "name": "Пример записи 2", "description": "Это вторая тестовая запись"}
-]
+# Глобальные переменные для хранения данных
+matrix = None
+result_matrix = None
 
 
 def main():
     """Главная функция программы"""
-    print("Добро пожаловать в систему управления записями!")
+    print("Добро пожаловать в систему обработки матриц!")
 
     while True:
         show_main_menu()
@@ -29,15 +27,14 @@ def main():
 
 def show_main_menu():
     """Показать главное меню"""
-    print("\n" + "=" * 20)
-    print("=== ГЛАВНОЕ МЕНЮ ===")
-    print("=" * 20)
-    print("1. Показать все записи")
-    print("2. Добавить новую запись")
-    print("3. Удалить запись")
-    print("4. Поиск записей")
-    print("0. Выход")
-    print("-" * 20)
+    print("\n" + "=" * 40)
+    print("=== СИСТЕМА ОБРАБОТКИ МАТРИЦ ===")
+    print("=" * 40)
+    print("1. Ввод исходных данных")
+    print("2. Выполнение алгоритма")
+    print("3. Вывод результата")
+    print("4. Завершение работы")
+    print("=" * 40)
 
 
 def get_user_choice():
@@ -59,121 +56,157 @@ def validate_choice(choice):
 def process_choice(choice):
     """Обработать выбор пользователя"""
     if choice == "1":
-        show_all_records()
+        input_data()
     elif choice == "2":
-        add_new_record()
+        execute_algorithm()
     elif choice == "3":
-        delete_record()
+        output_result()
     elif choice == "4":
-        search_records()
+        print("Завершение работы...")
+        exit()
 
 
-def show_all_records():
-    """Показать все записи"""
-    if not records:
-        print("Нет доступных записей.")
+def input_data():
+    """Ввод исходных данных"""
+    global matrix, result_matrix
+
+    print("\n" + "=" * 30)
+    print("=== ВВОД ИСХОДНЫХ ДАННЫХ ===")
+    print("=" * 30)
+    print("1. Ввод вручную")
+    print("2. Случайная генерация")
+    print("3. Назад")
+
+    while True:
+        sub_choice = input("Выберите способ ввода: ")
+        if sub_choice in ["1", "2", "3"]:
+            break
+        print("Неверный выбор!")
+
+    if sub_choice == "1":
+        manual_input()
+    elif sub_choice == "2":
+        random_generation()
+    elif sub_choice == "3":
         return
 
-    print("\n--- Все записи ---")
-    for record in records:
-        print(f"ID: {record['id']}, Название: {record['name']}")
-        print(f"   Описание: {record['description']}")
-        print("-" * 30)
+    # Сброс результатов при вводе новых данных
+    result_matrix = None
+    print("✓ Данные успешно введены!")
 
 
-def add_new_record():
-    """Добавить новую запись"""
-    print("\n--- Добавление новой записи ---")
-
-    name = input("Введите название записи: ").strip()
-    if not name:
-        print("Название не может быть пустым!")
-        return
-
-    description = input("Введите описание записи: ").strip()
-
-    new_record = {
-        "id": generate_new_id(),
-        "name": name,
-        "description": description
-    }
-
-    records.append(new_record)
-    print("✓ Запись успешно добавлена!")
-
-
-def generate_new_id():
-    """Сгенерировать новый ID для записи"""
-    if records:
-        return max(record["id"] for record in records) + 1
-    return 1
-
-
-def delete_record():
-    """Удалить запись"""
-    if not records:
-        print("Нет записей для удаления.")
-        return
-
-    print("\n--- Удаление записи ---")
-    show_all_records()
+def manual_input():
+    """Ручной ввод матрицы"""
+    global matrix
 
     try:
-        record_id = int(input("Введите ID записи для удаления: "))
+        print("\n--- Ручной ввод матрицы ---")
+        n = int(input("Введите количество строк (N): "))
+        m = int(input("Введите количество столбцов (M): "))
+
+        if n <= 0 or m <= 0:
+            print("Ошибка: размеры должны быть положительными числами!")
+            return
+
+        matrix = []
+        print(f"Введите матрицу {n}x{m} построчно:")
+
+        for i in range(n):
+            while True:
+                row_input = input(f"Строка {i + 1}: ")
+                try:
+                    row = list(map(int, row_input.split()))
+                    if len(row) != m:
+                        print(f"Ошибка: в строке должно быть {m} элементов!")
+                        continue
+                    matrix.append(row)
+                    break
+                except ValueError:
+                    print("Ошибка: вводите только целые числа!")
+
+        print("\nВведенная матрица:")
+        print_matrix(matrix)
+
     except ValueError:
-        print("Ошибка: ID должен быть числом!")
+        print("Ошибка ввода!")
+
+
+def random_generation():
+    """Случайная генерация матрицы"""
+    global matrix
+    import random
+
+    try:
+        print("\n--- Случайная генерация матрицы ---")
+        n = int(input("Введите количество строк (N): "))
+        m = int(input("Введите количество столбцов (M): "))
+        min_val = int(input("Минимальное значение: "))
+        max_val = int(input("Максимальное значение: "))
+
+        if n <= 0 or m <= 0:
+            print("Ошибка: размеры должны быть положительными числами!")
+            return
+
+        matrix = []
+        for i in range(n):
+            row = [random.randint(min_val, max_val) for _ in range(m)]
+            matrix.append(row)
+
+        print("\nСгенерированная матрица:")
+        print_matrix(matrix)
+
+    except ValueError:
+        print("Ошибка ввода!")
+
+
+def execute_algorithm():
+    """Выполнение алгоритма по заданию - ЗАГЛУШКА"""
+    global matrix, result_matrix
+
+    if matrix is None:
+        print("Ошибка: сначала введите данные!")
         return
 
-    success = remove_record(record_id)
-    if success:
-        print("✓ Запись успешно удалена!")
-    else:
-        print("✗ Запись с таким ID не найдена")
+    print("\n" + "=" * 30)
+    print("=== ВЫПОЛНЕНИЕ АЛГОРИТМА ===")
+    print("=" * 30)
+
+    # ЗАГЛУШКА - здесь должен быть реальный алгоритм
+    print("Алгоритм выполняется...")
+
+    # Вместо реального алгоритма создаем заглушку
+    result_matrix = "результат выполнения алгоритма"
+
+    print("✓ Алгоритм выполнен успешно!")
+    print("(реализация алгоритма оставлена в виде заглушки)")
 
 
-def remove_record(record_id):
-    """Удалить запись по ID"""
-    global records
-    for i, record in enumerate(records):
-        if record["id"] == record_id:
-            del records[i]
-            return True
-    return False
+def output_result():
+    """Вывод результата"""
+    global result_matrix
 
-
-def search_records():
-    """Поиск записей"""
-    print("\n--- Поиск записей ---")
-
-    search_query = input("Введите поисковый запрос: ").strip().lower()
-    if not search_query:
-        print("Поисковый запрос не может быть пустым!")
+    if result_matrix is None:
+        print("Ошибка: сначала выполните алгоритм!")
         return
 
-    results = perform_search(search_query)
-    display_search_results(results)
+    print("\n" + "=" * 30)
+    print("=== ВЫВОД РЕЗУЛЬТАТА ===")
+    print("=" * 30)
+
+    print("Результат работы алгоритма:")
+    print(result_matrix)
+
+    print("\n(вывод реального результата оставлен в виде заглушки)")
 
 
-def perform_search(query):
-    """Выполнить поиск по имени и описанию"""
-    results = []
-    for record in records:
-        if (query in record["name"].lower() or
-                query in record["description"].lower()):
-            results.append(record)
-    return results
+def print_matrix(mat):
+    """Печать матрицы"""
+    if mat is None:
+        print("Матрица не определена")
+        return
 
-
-def display_search_results(results):
-    """Показать результаты поиска"""
-    if results:
-        print(f"\n--- Найдено записей: {len(results)} ---")
-        for record in results:
-            print(f"ID: {record['id']}, Название: {record['name']}")
-            print(f"   Описание: {record['description']}")
-            print("-" * 30)
-    else:
-        print("Записи по вашему запросу не найдены.")
+    for row in mat:
+        print(" ".join(f"{elem:4}" for elem in row))
 
 
 if __name__ == "__main__":
